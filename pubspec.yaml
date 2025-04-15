@@ -1,8 +1,8 @@
-name: flutter_uae_pass
+name: flutter_uae_pass_local
 description: A UAE Pass plugin for Flutter for iOS and Android only. This is an unofficial version.
 version: 1.0.2
-homepage: https://github.com/MohamedAbd0/flutter_uae_pass
-repository: https://github.com/MohamedAbd0/flutter_uae_pass
+homepage: https://github.com/alihussienismail/flutter_uae_pass
+repository: https://github.com/alihussienismail/flutter_uae_pass
 
 environment:
   sdk: ">=3.1.3 <4.0.0"

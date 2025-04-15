@@ -19,3 +19,6 @@
 ## 1.0.1
 
 - updated java version
+## 1.0.2
+
+- added localization support for (Ar, En)

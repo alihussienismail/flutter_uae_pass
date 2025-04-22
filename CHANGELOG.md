@@ -22,3 +22,7 @@
 ## 1.0.2
 
 - added localization support for (Ar, En)
+## 1.0.3
+
+- added localization support for (Ar, En) 
+- fix lib name

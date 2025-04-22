@@ -33,3 +33,5 @@
 - change IOS UAE PASS SDK
 ## 1.0.6
 - change IOS UAE PASS SDK
+## 1.0.7
+- change IOS UAE PASS SDK just Go to Get Profile

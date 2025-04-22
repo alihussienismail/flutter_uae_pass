@@ -26,3 +26,6 @@
 
 - added localization support for (Ar, En) 
 - fix lib name
+
+## 1.0.4
+- change andriod UAE PASS SDK

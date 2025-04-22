@@ -29,3 +29,5 @@
 
 ## 1.0.4
 - change andriod UAE PASS SDK
+## 1.0.5
+- change IOS UAE PASS SDK

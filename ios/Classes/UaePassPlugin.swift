@@ -11,11 +11,15 @@ public class UaePassPlugin: NSObject, FlutterPlugin {
     registrar.addMethodCallDelegate(instance, channel: channel)
     registrar.addApplicationDelegate(instance)
   }
- func getUaePassTokenForCode(code: String) {
+    func getUaePassTokenForCode(code: String, completion: ((String) -> Void)? = nil) {
         
         UAEPASSNetworkRequests.shared.getUAEPassToken(code: code, completion: { (uaePassToken) in
             if let uaePassToken = uaePassToken, let accessToken = uaePassToken.accessToken {
-              self.flutterResult!(String(accessToken))    
+                if let completion = completion {
+                    completion(accessToken)
+                } else {
+                    self.flutterResult!(String(accessToken))
+                }
             } else {
               self.flutterResult!(FlutterError(code: "ERROR", message:"Unable to get user token, Please try again.",details: nil)) 
                  return
@@ -102,15 +106,11 @@ public class UaePassPlugin: NSObject, FlutterPlugin {
                     result(FlutterError(code: "ERROR", message: "Unable to get authorization code", details: nil))
                     return
                 }
-
-                // Step 2: Fetch token
                 self.getUaePassTokenForCode(code: code) { token in
-                    guard let token = token else {
-                        result(FlutterError(code: "ERROR", message: "Failed to get access token", details: nil))
-                        return
-                    }
-
-                    // Step 3: Fetch profile
+//                    guard let token = token else {
+//                        result(FlutterError(code: "ERROR", message: "Failed to get access token", details: nil))
+//                        return
+//                    }
                     self.getUaePassProfileForToken(token: token)
                 }
             }

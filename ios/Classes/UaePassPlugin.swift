@@ -27,6 +27,7 @@ public class UaePassPlugin: NSObject, FlutterPlugin {
     }
 
         func getUaePassProfileForToken(token: String) {
+
           UAEPASSNetworkRequests.shared.getUAEPassUserProfile(token: token, completion: { (userProfile) in
             if let userProfile = userProfile {
             // Encode the userProfile object into JSON data
@@ -89,13 +90,39 @@ public class UaePassPlugin: NSObject, FlutterPlugin {
         let code = arguments["code"] as! String
         self.getUaePassTokenForCode(code: code)
       }
-    case "profile":
-      if let arguments = call.arguments as? [String: Any]{
-        let token = arguments["token"] as! String
-        self.getUaePassProfileForToken(token: token)
-      }
+     case "profile":
+        // Sign in → get code → fetch token → fetch profile
+        if let webVC = UAEPassWebViewController.instantiate() as? UAEPassWebViewController {
+            webVC.urlString = UAEPassConfiguration.getServiceUrlForType(serviceType: .loginURL)
 
-      
+            webVC.onUAEPassSuccessBlock = { (code: String?) -> Void in
+                UIApplication.shared.keyWindow?.rootViewController?.dismiss(animated: true)
+
+                guard let code = code else {
+                    result(FlutterError(code: "ERROR", message: "Unable to get authorization code", details: nil))
+                    return
+                }
+
+                // Step 2: Fetch token
+                self.getUaePassTokenForCode(code: code) { token in
+                    guard let token = token else {
+                        result(FlutterError(code: "ERROR", message: "Failed to get access token", details: nil))
+                        return
+                    }
+
+                    // Step 3: Fetch profile
+                    self.getUaePassProfileForToken(token: token)
+                }
+            }
+
+            webVC.onUAEPassFailureBlock = { (response: String?) -> Void in
+                UIApplication.shared.keyWindow?.rootViewController?.dismiss(animated: true)
+                result(FlutterError(code: "ERROR", message: response ?? "Login failed", details: nil))
+            }
+
+            webVC.reloadwithURL(url: webVC.urlString)
+            UIApplication.shared.keyWindow?.rootViewController?.present(webVC, animated: true)
+        }
     case "sign_out": 
       HTTPCookieStorage.shared.removeCookies(since: Date.distantPast)
       WKWebsiteDataStore.default().fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { records in
@@ -106,8 +133,6 @@ public class UaePassPlugin: NSObject, FlutterPlugin {
       UAEPASSRouter.shared.uaePassToken = nil
       self.flutterResult!(true)
     case "sign_in":
-    
-         
   if let webVC = UAEPassWebViewController.instantiate() as? UAEPassWebViewController {
             webVC.urlString = UAEPassConfiguration.getServiceUrlForType(serviceType: .loginURL)
             webVC.onUAEPassSuccessBlock = {(code: String?) -> Void in
@@ -139,7 +164,7 @@ public class UaePassPlugin: NSObject, FlutterPlugin {
     }
   }
 
-  
+
  public func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {   
 
           print("<><><><> appDelegate URL : \(url.absoluteString)")
